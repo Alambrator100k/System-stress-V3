@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,8 +15,8 @@
         body {
             background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
             color: #fff;
-            height: 100vh;
-            overflow: hidden;
+            min-height: 100vh;
+            overflow-x: hidden;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -28,11 +28,13 @@
         .warning {
             background: rgba(255, 0, 0, 0.2);
             border: 2px solid #ff4757;
-            padding: 20px;
+            padding: 15px;
             border-radius: 10px;
-            margin-bottom: 30px;
-            max-width: 600px;
+            margin-bottom: 20px;
+            max-width: 800px;
+            width: 100%;
             animation: pulse 2s infinite;
+            font-size: 0.9rem;
         }
         
         @keyframes pulse {
@@ -42,34 +44,35 @@
         }
         
         h1 {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
+            font-size: 2rem;
+            margin-bottom: 15px;
             color: #ffd700;
             text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
         }
         
         .container {
             background: rgba(0, 0, 0, 0.7);
-            padding: 30px;
+            padding: 20px;
             border-radius: 15px;
             box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
-            max-width: 700px;
+            max-width: 800px;
             width: 100%;
         }
         
         .status {
             display: flex;
             justify-content: space-around;
-            margin: 25px 0;
+            margin: 20px 0;
             flex-wrap: wrap;
+            gap: 15px;
         }
         
         .status-item {
             background: rgba(255, 255, 255, 0.1);
             padding: 15px;
             border-radius: 10px;
-            margin: 10px;
-            min-width: 150px;
+            flex: 1;
+            min-width: 200px;
         }
         
         .progress {
@@ -88,7 +91,7 @@
         }
         
         .countdown {
-            font-size: 3rem;
+            font-size: 2.5rem;
             font-weight: bold;
             margin: 20px 0;
             color: #ff4757;
@@ -102,17 +105,26 @@
             border-left: 5px solid #ffd700;
         }
         
+        .buttons-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        
         button {
             background: linear-gradient(135deg, #ff4757, #ff6b81);
             color: white;
             border: none;
-            padding: 12px 30px;
+            padding: 12px 25px;
             border-radius: 50px;
-            font-size: 1.2rem;
+            font-size: 1rem;
             cursor: pointer;
             margin: 10px;
             transition: transform 0.3s, box-shadow 0.3s;
             box-shadow: 0 5px 15px rgba(255, 71, 87, 0.4);
+            flex: 1;
+            min-width: 150px;
         }
         
         button:hover {
@@ -134,18 +146,56 @@
             z-index: -1;
         }
         
+        /* تحسينات للشاشات الصغيرة */
         @media (max-width: 768px) {
             h1 {
-                font-size: 2rem;
+                font-size: 1.8rem;
             }
             
             .countdown {
-                font-size: 2.5rem;
+                font-size: 2rem;
             }
             
-            .status {
-                flex-direction: column;
-                align-items: center;
+            .container {
+                padding: 15px;
+            }
+            
+            .status-item {
+                min-width: 100%;
+            }
+            
+            .warning {
+                font-size: 0.8rem;
+                padding: 10px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .countdown {
+                font-size: 1.8rem;
+            }
+            
+            button {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+                min-width: 120px;
+            }
+            
+            .message {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+            
+            .status-item {
+                padding: 10px;
+            }
+            
+            .progress {
+                height: 20px;
             }
         }
     </style>
@@ -184,8 +234,10 @@
         
         <div class="countdown" id="countdown">01:00</div>
         
-        <button id="startBtn">بدء العرض التوضيحي</button>
-        <button id="stopBtn" class="hidden">إيقاف العرض</button>
+        <div class="buttons-container">
+            <button id="startBtn">بدء العرض التوضيحي</button>
+            <button id="stopBtn" class="hidden">إيقاف العرض</button>
+        </div>
     </div>
 
     <script>
@@ -377,4 +429,4 @@
         });
     </script>
 </body>
-</html>
+    </html>
