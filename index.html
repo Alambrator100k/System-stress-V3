@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة الموارد - العرض التوضيحي</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: #fff;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .warning {
+            background: rgba(255, 0, 0, 0.2);
+            border: 2px solid #ff4757;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            max-width: 600px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(255, 71, 87, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); }
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+        
+        .container {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+            max-width: 700px;
+            width: 100%;
+        }
+        
+        .status {
+            display: flex;
+            justify-content: space-around;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+        
+        .status-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px;
+            min-width: 150px;
+        }
+        
+        .progress {
+            height: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ff4757, #ff6b81);
+            width: 0%;
+            transition: width 0.5s;
+        }
+        
+        .countdown {
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #ff4757;
+        }
+        
+        .message {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            border-left: 5px solid #ffd700;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #ff4757, #ff6b81);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            margin: 10px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 5px 15px rgba(255, 71, 87, 0.4);
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 71, 87, 0.6);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .countdown {
+                font-size: 2.5rem;
+            }
+            
+            .status {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="effects" id="effects"></div>
+    
+    <div class="warning">
+        ⚠️ تحذير: هذه صفحة توضيحية تعليمية فقط. لا تستخدم هذا الكود لأي غرض ضار.
+    </div>
+    
+    <h1>نظام إدارة الموارد - العرض التوضيحي</h1>
+    
+    <div class="container">
+        <div class="message">
+            <p>هذا العرض التوضيحي يوضح كيفية استخدام موارد النظام بشكل مكثف.</p>
+        </div>
+        
+        <div class="status">
+            <div class="status-item">
+                <h3>استخدام المعالج</h3>
+                <div class="progress">
+                    <div class="progress-bar" id="cpuUsage"></div>
+                </div>
+                <span id="cpuPercent">0%</span>
+            </div>
+            
+            <div class="status-item">
+                <h3>استخدام الذاكرة</h3>
+                <div class="progress">
+                    <div class="progress-bar" id="memUsage"></div>
+                </div>
+                <span id="memPercent">0%</span>
+            </div>
+        </div>
+        
+        <div class="countdown" id="countdown">01:00</div>
+        
+        <button id="startBtn">بدء العرض التوضيحي</button>
+        <button id="stopBtn" class="hidden">إيقاف العرض</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const cpuUsageBar = document.getElementById('cpuUsage');
+            const memUsageBar = document.getElementById('memUsage');
+            const cpuPercent = document.getElementById('cpuPercent');
+            const memPercent = document.getElementById('memPercent');
+            const countdown = document.getElementById('countdown');
+            const startBtn = document.getElementById('startBtn');
+            const stopBtn = document.getElementById('stopBtn');
+            const effects = document.getElementById('effects');
+            
+            let timeLeft = 60;
+            let workers = [];
+            let memoryHog = [];
+            let isRunning = false;
+            let timerInterval;
+            
+            // تأثيرات بصرية
+            function createEffects() {
+                setInterval(() => {
+                    const effect = document.createElement('div');
+                    effect.style.position = 'absolute';
+                    effect.style.width = Math.random() * 100 + 'px';
+                    effect.style.height = Math.random() * 100 + 'px';
+                    effect.style.background = `radial-gradient(circle, 
+                        hsla(${Math.random() * 360}, 100%, 50%, 0.7), 
+                        hsla(${Math.random() * 360}, 100%, 50%, 0))`;
+                    effect.style.borderRadius = '50%';
+                    effect.style.top = Math.random() * 100 + '%';
+                    effect.style.left = Math.random() * 100 + '%';
+                    effect.style.pointerEvents = 'none';
+                    effect.style.animation = `moveEffect ${Math.random() * 10 + 5}s linear`;
+                    
+                    effects.appendChild(effect);
+                    
+                    setTimeout(() => {
+                        effects.removeChild(effect);
+                    }, 15000);
+                }, 500);
+            }
+            
+            // إجهاد المعالج
+            function stressCPU() {
+                const numCores = navigator.hardwareConcurrency || 4;
+                
+                for (let i = 0; i < numCores * 2; i++) {
+                    const workerCode = `
+                        let running = true;
+                        self.onmessage = function(e) {
+                            if (e.data === 'stop') {
+                                running = false;
+                            }
+                        };
+                        
+                        function work() {
+                            if (!running) return;
+                            let sum = 0;
+                            for (let i = 0; i < 1000000000; i++) {
+                                sum += Math.sqrt(Math.random() * Math.random());
+                            }
+                            self.postMessage('tick');
+                            setTimeout(work, 0);
+                        }
+                        
+                        work();
+                    `;
+                    
+                    const blob = new Blob([workerCode], {type: 'text/javascript'});
+                    const worker = new Worker(URL.createObjectURL(blob));
+                    
+                    worker.onmessage = function(e) {
+                        if (e.data === 'tick') {
+                            updateCPUUsage();
+                        }
+                    };
+                    
+                    worker.postMessage('start');
+                    workers.push(worker);
+                }
+            }
+            
+            // إجهاد الذاكرة
+            function stressMemory() {
+                setInterval(() => {
+                    try {
+                        const blockSize = 100000000;
+                        for (let i = 0; i < 5; i++) {
+                            memoryHog.push(new Array(blockSize).fill(Math.random()));
+                        }
+                        updateMemUsage();
+                    } catch (e) {
+                        console.error('تعذر تخصيص المزيد من الذاكرة:', e);
+                    }
+                }, 1000);
+            }
+            
+            // تحديث واجهة استخدام المعالج
+            function updateCPUUsage() {
+                const usage = Math.min(100, parseInt(cpuPercent.textContent) + 1);
+                cpuPercent.textContent = `${usage}%`;
+                cpuUsageBar.style.width = `${usage}%`;
+            }
+            
+            // تحديث واجهة استخدام الذاكرة
+            function updateMemUsage() {
+                const usage = Math.min(100, parseInt(memPercent.textContent) + 2);
+                memPercent.textContent = `${usage}%`;
+                memUsageBar.style.width = `${usage}%`;
+            }
+            
+            // بدء العد التنازلي
+            function startCountdown() {
+                timerInterval = setInterval(() => {
+                    timeLeft--;
+                    
+                    const minutes = Math.floor(timeLeft / 60);
+                    const seconds = timeLeft % 60;
+                    countdown.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    
+                    if (timeLeft <= 0) {
+                        stopTest();
+                    }
+                }, 1000);
+            }
+            
+            // بدء الاختبار
+            function startTest() {
+                if (isRunning) return;
+                
+                isRunning = true;
+                startBtn.classList.add('hidden');
+                stopBtn.classList.remove('hidden');
+                
+                stressCPU();
+                stressMemory();
+                startCountdown();
+                createEffects();
+            }
+            
+            // إيقاف الاختبار
+            function stopTest() {
+                if (!isRunning) return;
+                
+                isRunning = false;
+                clearInterval(timerInterval);
+                
+                workers.forEach(worker => {
+                    worker.postMessage('stop');
+                    worker.terminate();
+                });
+                
+                workers = [];
+                memoryHog = [];
+                
+                startBtn.classList.remove('hidden');
+                stopBtn.classList.add('hidden');
+                
+                cpuPercent.textContent = '0%';
+                memPercent.textContent = '0%';
+                cpuUsageBar.style.width = '0%';
+                memUsageBar.style.width = '0%';
+                
+                timeLeft = 60;
+                countdown.textContent = '01:00';
+                
+                effects.innerHTML = '';
+            }
+            
+            // إضافة أنماط الحركة للعناصر
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes moveEffect {
+                    0% {
+                        transform: translate(0, 0) scale(1);
+                        opacity: 1;
+                    }
+                    100% {
+                        transform: translate(${Math.random() * 200 - 100}px, ${Math.random() * 200 - 100}px) scale(0);
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            startBtn.addEventListener('click', startTest);
+            stopBtn.addEventListener('click', stopTest);
+        });
+    </script>
+</body>
+</html>
